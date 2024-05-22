@@ -1,4 +1,8 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,7 +62,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   static const containerHeight = 52.0;
+  static const containerWidth = containerHeight * 2.5;
   static const buttonSize = 44.0;
+  static const Duration duration = Duration(seconds: 2);
 
   static final lightBGColor = Colors.lightBlue.shade300;
   static final lightButtonColor = Colors.amber.shade300;
@@ -72,19 +78,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void initState() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: duration,
     );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       backgroundColor: Colors.amber.shade50,
       body: Center(
@@ -100,35 +100,130 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   _animationController.forward();
                 }
               },
-              child: Stack(
-                children: [
-                  Container(
-                    height: containerHeight,
-                    width: containerHeight * 3,
-                    decoration: BoxDecoration(
-                      color: ColorTween(
-                        begin: lightBGColor,
-                        end: darkBGColor,
-                      ).evaluate(_animationController),
-                      borderRadius: BorderRadius.circular(containerHeight / 2),
-                    ),
-                  ),
-                  Positioned(
-                    left: 4 + (_animationController.value * (containerHeight * 3 - buttonSize - 8)),
-                    top: 4,
-                    bottom: 4,
-                    child: Container(
-                      width: buttonSize,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(containerHeight / 2),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: containerHeight,
+                      width: containerWidth,
                       decoration: BoxDecoration(
                         color: ColorTween(
-                          begin: lightButtonColor,
-                          end: darkButtonColor,
+                          begin: lightBGColor,
+                          end: darkBGColor,
                         ).evaluate(_animationController),
                         borderRadius: BorderRadius.circular(containerHeight / 2),
                       ),
                     ),
-                  ),
-                ],
+                    // Dark Radiant
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5 * _animationController.value,
+                          child: ClipPath(
+                            clipper: RadiantClipper(),
+                            child: Container(color: Colors.white.withOpacity(0.3), width: buttonSize + 4 * 2 + 12 * 3, height: containerHeight,),
+                          ),
+                        )),
+                    Positioned(
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5 * _animationController.value,
+                          child: ClipPath(
+                            clipper: RadiantClipper(),
+                            child: Container(color: Colors.white.withOpacity(0.5), width: buttonSize + 4 * 2 + 12 * 2, height: containerHeight,),
+                          ),
+                        )),
+                    Positioned(
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5 * _animationController.value,
+                          child: ClipPath(
+                            clipper: RadiantClipper(),
+                            child: Container(color: Colors.white.withOpacity(0.7), width: buttonSize + 4 * 2 + 12, height: containerHeight,),
+                          ),
+                        )),
+
+                    // Light Radiant
+                    Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5 - 0.5 * _animationController.value,
+                          child: ClipPath(
+                            clipper: RadiantClipper(),
+                            child: Container(color: Colors.white.withOpacity(0.3), width: buttonSize + 4 * 2 + 12 * 3, height: containerHeight,),
+                          ),
+                        )),
+                    Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5 - 0.5 * _animationController.value,
+                          child: ClipPath(
+                            clipper: RadiantClipper(),
+                            child: Container(color: Colors.white.withOpacity(0.5), width: buttonSize + 4 * 2 + 12 * 2, height: containerHeight,),
+                          ),
+                        )),
+                    Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5- 0.5 * _animationController.value,
+                          child: ClipPath(
+                            clipper: RadiantClipper(),
+                            child: Container(color: Colors.white.withOpacity(0.7), width: buttonSize + 4 * 2 + 12, height: containerHeight,),
+                          ),
+                        )),
+
+                    // // Light Decor
+                    // Positioned.fill(
+                    //   child: ClipPath(
+                    //     clipper: CloudClipper(false),
+                    //     child: Container(
+                    //       color: Colors.white.withOpacity(0.4),
+                    //     ),
+                    //   ),
+                    // ),
+                    // Positioned.fill(
+                    //   child: ClipPath(
+                    //     clipper: CloudClipper(true),
+                    //     child: Container(
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
+                    // ),
+
+                    // Button
+                    Positioned(
+                      left: 4 + (_animationController.value * (containerWidth - buttonSize - 8)),
+                      top: 4,
+                      bottom: 4,
+                      child: Container(
+                        width: buttonSize,
+                        decoration: BoxDecoration(
+                          color: ColorTween(
+                            begin: lightButtonColor,
+                            end: darkButtonColor,
+                          ).evaluate(_animationController),
+                          borderRadius: BorderRadius.circular(containerHeight / 2),
+                          boxShadow: [
+                            BoxShadow(color: Colors.grey.shade900.withOpacity(0.3), blurRadius: 4, spreadRadius: 2, offset: const Offset(0, 2))
+                          ]
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -136,4 +231,40 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+class CloudClipper extends CustomClipper<Path> {
+  final bool small;
+  CloudClipper(this.small);
+  @override
+  Path getClip(Size size) {
+   Path path = Path();
+   path.moveTo(0, size.height - size.height / 8);
+   const clouds = 5;
+   for (int i = 0; i <= clouds; i++) {
+     final x = size.width * i / clouds;
+     final y = size.height - size.height * i / (small ? 5 : 3);
+     path.quadraticBezierTo(x - size.width / clouds / 2, y, x, size.height - size.height * i / (small ? 10 : 5));
+   }
+    path.lineTo(size.width, size.height);
+   path.lineTo(0, size.height);
+    path.close();
+   return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
+
+}
+
+class RadiantClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.addOval(Rect.fromLTWH(0, -size.height / 3, size.width, size.height * 5 / 3));
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
