@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -54,18 +55,26 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  static const containerHeight = 52.0;
+  static const buttonSize = 44.0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  static final lightBGColor = Colors.lightBlue.shade300;
+  static final lightButtonColor = Colors.amber.shade300;
+  static const lightButtonDecorItems = Colors.transparent;
+
+  static final darkBGColor = Colors.blueGrey.shade900;
+  static final darkButtonColor = Colors.grey.shade200;
+  static final darkButtonDecorItems = Colors.grey.shade700;
+  
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    );
+    super.initState();
   }
 
   @override
@@ -77,49 +86,54 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      backgroundColor: Colors.amber.shade50,
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return InkWell(
+              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              onTap: () {
+                if (_animationController.status == AnimationStatus.completed) {
+                  _animationController.reverse();
+                } else {
+                  _animationController.forward();
+                }
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    height: containerHeight,
+                    width: containerHeight * 3,
+                    decoration: BoxDecoration(
+                      color: ColorTween(
+                        begin: lightBGColor,
+                        end: darkBGColor,
+                      ).evaluate(_animationController),
+                      borderRadius: BorderRadius.circular(containerHeight / 2),
+                    ),
+                  ),
+                  Positioned(
+                    left: 4 + (_animationController.value * (containerHeight * 3 - buttonSize - 8)),
+                    top: 4,
+                    bottom: 4,
+                    child: Container(
+                      width: buttonSize,
+                      decoration: BoxDecoration(
+                        color: ColorTween(
+                          begin: lightButtonColor,
+                          end: darkButtonColor,
+                        ).evaluate(_animationController),
+                        borderRadius: BorderRadius.circular(containerHeight / 2),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        )
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
