@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -8,28 +7,12 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -40,15 +23,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -164,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       top: 0,
                       bottom: 0,
                       child: Opacity(
-                        opacity: 0.5 - 0.5 * _animationController.value,
+                        opacity: 0.5 * (1 - _animationController.value),
                         child: ClipPath(
                           clipper: RadiantClipper(),
                           child: Container(
@@ -179,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       top: 0,
                       bottom: 0,
                       child: Opacity(
-                        opacity: 0.5 - 0.5 * _animationController.value,
+                        opacity: 0.5 * (1 - _animationController.value),
                         child: ClipPath(
                           clipper: RadiantClipper(),
                           child: Container(
@@ -194,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       top: 0,
                       bottom: 0,
                       child: Opacity(
-                        opacity: 0.5 - 0.5 * _animationController.value,
+                        opacity: 0.5 * (1 - _animationController.value),
                         child: ClipPath(
                           clipper: RadiantClipper(),
                           child: Container(
@@ -207,29 +181,21 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
                   // // Light Decor
                   Positioned.fill(
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, 0),
-                        end: const Offset(0, 1),
-                      ).animate(_animationController),
+                    child: _lightDecorTransition(
                       child: ClipPath(
                         clipper: CloudClipper(false),
                         child: Container(
-                          color: Colors.white.withOpacity(0.4 * (1 - _animationController.value)),
+                          color: Colors.white.withOpacity(0.4),
                         ),
                       ),
                     ),
                   ),
                   Positioned.fill(
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, 0),
-                        end: const Offset(0, 1),
-                      ).animate(_animationController),
+                    child: _lightDecorTransition(
                       child: ClipPath(
                         clipper: CloudClipper(true),
                         child: Container(
-                          color: Colors.white.withOpacity(1 - _animationController.value),
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -382,6 +348,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       )),
     );
   }
+
+  Widget _lightDecorTransition({required Widget child}) {
+    return SlideTransition(
+        position: Tween<Offset>(
+        begin: const Offset(0, 0),
+    end: const Offset(0, 1),
+    ).animate(_animationController), child: Opacity(
+      opacity: 1 - _animationController.value,
+        child: child));
+  }
   
   Widget _darkDecorTransition({required Widget child}) {
     return SlideTransition(
@@ -451,5 +427,5 @@ class StarClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
